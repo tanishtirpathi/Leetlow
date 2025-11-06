@@ -40,17 +40,56 @@ const regester = async (req, res) => {
     };
     res.cookie("jwt", token, {
       httpOnly: true,
-      sameSite: "strict", 
+      sameSite: "strict",
       secure: process.env.NODE_ENV !== "development",
       maxAge: 1000 * 60 * 60 * 24 * 2,
     });
-    res.status(201).json(new ApiResponse(201,  "new user regester ",user));
+    res.status(201).json(new ApiResponse(201, "new user regester ", user));
   } catch (error) {
-    console.error(`we got error in regester controller ${error}` )
-    throw new ApiError(404 , error , "error in regester controller ")
+    console.error(`we got error in regester controller ${error}`);
+    throw new ApiError(404, error, "error in regester controller ");
   }
 };
-const login = async (req, res) => {};
+const login = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await db.user.findUnique({
+      where: {
+        email,
+      },
+    });
+    if (!user) {
+      throw new ApiError(404, "user not found  ");
+    }
+    const PasswordCompare = await bcrypt.compare(password, user.password);
+    if (!PasswordCompare) {
+      throw new ApiError(401, "invalid credentials ");
+    }
+
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+      expiresIn: "2d",
+    });
+    const LogedInUser = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      password: user.password,
+      image: user.image,
+    };
+    res.cookie("jwt", token, {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: process.env.NODE_ENV !== "development",
+      maxAge: 1000 * 60 * 60 * 24 * 2,
+    });
+    res
+      .status(201)
+      .json(new ApiResponse(201, "new user regester ", LogedInUser));
+  } catch (error) {
+    console.error(`we got error in regester controller ${error}`);
+    throw new ApiError(404, error, "error in regester controller ");
+  }
+};
 const logout = async (req, res) => {};
 const checkUser = async (req, res) => {};
 export { regester, login, logout, checkUser };
