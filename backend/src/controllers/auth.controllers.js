@@ -84,12 +84,26 @@ const login = async (req, res) => {
     });
     res
       .status(201)
-      .json(new ApiResponse(201, "new user regester ", LogedInUser));
+      .json(new ApiResponse(201, " user login ", LogedInUser));
   } catch (error) {
-    console.error(`we got error in regester controller ${error}`);
-    throw new ApiError(404, error, "error in regester controller ");
+    console.error(`we got error in Login controller ${error}`);
+    throw new ApiError(404, error, "error in login controller ");
   }
 };
-const logout = async (req, res) => {};
+const logout = async (req, res) => {
+  try {
+    res.clearCookie("jwt", {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: process.env.NODE_ENV !== "development",
+    });
+    res
+      .status(202)
+      .json(new ApiResponse(202, "user logged out successfully"));
+  } catch (error) {
+     console.error(`we got error in logout controller ${error}`);
+    throw new ApiError(404, error, "error in logout  controller ")
+  }
+};
 const checkUser = async (req, res) => {};
 export { regester, login, logout, checkUser };
