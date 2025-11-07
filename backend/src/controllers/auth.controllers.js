@@ -82,9 +82,7 @@ const login = async (req, res) => {
       secure: process.env.NODE_ENV !== "development",
       maxAge: 1000 * 60 * 60 * 24 * 2,
     });
-    res
-      .status(201)
-      .json(new ApiResponse(201, " user login ", LogedInUser));
+    res.status(201).json(new ApiResponse(201, " user login ", LogedInUser));
   } catch (error) {
     console.error(`we got error in Login controller ${error}`);
     throw new ApiError(404, error, "error in login controller ");
@@ -97,13 +95,19 @@ const logout = async (req, res) => {
       sameSite: "strict",
       secure: process.env.NODE_ENV !== "development",
     });
-    res
-      .status(202)
-      .json(new ApiResponse(202, "user logged out successfully"));
+    res.status(202).json(new ApiResponse(202, "user logged out successfully"));
   } catch (error) {
-     console.error(`we got error in logout controller ${error}`);
-    throw new ApiError(404, error, "error in logout  controller ")
+    console.error(`we got error in logout controller ${error}`);
+    throw new ApiError(404, error, "error in logout  controller ");
   }
 };
-const checkUser = async (req, res) => {};
+const checkUser = async (req, res) => {
+  try {
+    res
+      .status(200)
+      .json(new ApiResponse(201, "user is authenticated ", req.user));
+  } catch (error) {
+    throw new ApiError(404, "check user failed ");
+  }
+};
 export { regester, login, logout, checkUser };
