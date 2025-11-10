@@ -2,8 +2,7 @@ import jwt from "jsonwebtoken";
 import { ApiError } from "../libs/apierror.js";
 import { db } from "../libs/db.js";
 
-const 
-authmiddlware = async (req, res, next) => {
+const authmiddlware = async (req, res, next) => {
   try {
     const token = req.cookies.jwt;
     if (!token) {
@@ -34,4 +33,29 @@ authmiddlware = async (req, res, next) => {
     throw new ApiError(400, "middlware failed");
   }
 };
-export {authmiddlware};
+
+const checkAdmin = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const user = await db.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        role: true,
+      },
+    });
+
+    if (!user || user.role !== "ADMIN") {
+      throw new ApiError(
+        404,
+        "you are not admin so you don't have permisions "
+      );
+    }
+    next()
+  } catch (error) {
+    throw new ApiError(400 , error , "check admin failed ")
+  }
+};
+
+export { authmiddlware, checkAdmin };
