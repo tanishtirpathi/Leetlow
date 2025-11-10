@@ -1,3 +1,5 @@
+import { db } from "../libs/db.js";
+
 const createProblem = async (req, res) => {
   return console.log("hey this is the problem create controller");
 };
