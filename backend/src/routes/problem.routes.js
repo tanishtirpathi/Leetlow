@@ -9,11 +9,11 @@ import {
 } from "../controllers/problem.controllers.js";
 import { authmiddlware, checkAdmin } from "../middleware/auth.middlewares.js";
 const router = express.Router();
-router.get("get-all-problem ", authmiddlware, getALlProblm);
+router.get("/get-all-problem ", authmiddlware, getALlProblm);
 
-router.get("get-problem/:id", authmiddlware, getProblemById);
+router.get("/get-problem/:id", authmiddlware, getProblemById);
 
-router.put("update-problem/:id ", authmiddlware, checkAdmin, updateProblemById);
+router.put("/update-problem/:id ", authmiddlware, checkAdmin, updateProblemById);
 
 router.delete(
   "deleteProblem/:id",
@@ -22,8 +22,8 @@ router.delete(
   deleteProblemById
 );
 
-router.get("get-solved-problem", authmiddlware, getSolvedProblemByUser);
+router.get("/get-solved-problem", authmiddlware, getSolvedProblemByUser);
 
-router.post("createProblem", authmiddlware, checkAdmin, createProblem);
+router.post("/createProblem", authmiddlware, checkAdmin, createProblem);
 
 export default router;
