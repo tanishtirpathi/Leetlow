@@ -8,7 +8,24 @@ export const getJudge0LanguageId = (language) => {
   };
   return langaugeMap[language.toUpperCase()];
 };
-const sleep = (ms) => Promise((resolve) => setTimeout(resolve, ms));
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const JUDGE0_TIMEOUT =30000
+export const submitBatch = async (submissions) => {
+  const { data } = await axios.post(
+    `${process.env.JUDGE0_API}/submissions/batch?base64_encoded=false`,
+    {
+      submissions,
+    },{
+      timeout: JUDGE0_TIMEOUT,
+    }
+  );
+
+  console.log("Submission Results: ", data);
+
+  return data;
+};
+
 export const PoleBatchResults = async (tokens) => {
   while (true) {
     const { data } = await axios.get(
@@ -20,21 +37,18 @@ export const PoleBatchResults = async (tokens) => {
         },
       }
     );
+
     const results = data.submissions;
+    console.log("resultsof the wthout  -->", results);
+    console.log(
+      `resultsof the polebatchresults --> ${JSON.stringify(results)}`
+    );
     const isAllDone = results.every(
       (r) => r.status.id !== 1 && r.status.id !== 2
     );
+
     if (isAllDone) return results;
+
     await sleep(1000);
   }
-};
-export const submitBatch = async (submission) => {
-  const { data } = await axios.post(
-    `${process.env.JUDGE0_API}/submissions/batch?base64_encoded=false`,
-    {
-      submission,
-    }
-  );
-  console.log(`submission token or data : ${data}`);
-  return data; //! token milega yaha se
 };
